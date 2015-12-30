@@ -1,6 +1,7 @@
 package spreadsheet.gui.table;
 
 import spreadsheet.api.SpreadSheet;
+import spreadsheet.api.cell.Location;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +21,14 @@ public class CellEditor extends DefaultCellEditor {
     }
 
     @Override
-    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        return super.getTableCellEditorComponent(table, value, isSelected, row, column);
+    public Component getTableCellEditorComponent(
+            JTable table, Object value, boolean isSelected, int row, int column) {
+        Location location = new Location(row, column);
+        textField.setText(spreadSheet.getExpression(location));
+        textField.selectAll();
+        textField.setSelectionStart(0);
+        textField.setSelectionEnd(textField.getText().length());
+        textField.setCaretPosition(textField.getText().length());
+        return textField;
     }
 }

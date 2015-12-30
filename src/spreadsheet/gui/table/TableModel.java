@@ -23,35 +23,6 @@ public class TableModel implements javax.swing.table.TableModel {
         this.spreadSheet = spreadSheet;
     }
 
-    public static String convertColumn(int index) {
-        if (index <= 0) {
-            return null;
-        }
-
-        index--;
-
-        int n = 0;
-        while (index >= maxLength(n))
-            ++n;
-
-        int m = index - maxLength(n - 1);
-
-        StringBuilder sb = new StringBuilder();
-        // converts
-        for (int j = n; j > 0; --j) {
-            int v = (m % (int) Math.pow(26, j)) / (int) Math.pow(26, j - 1);
-            sb.append((char) ('a' + v));
-        }
-
-        return sb.toString();
-    }
-
-    // sum of BASE to the power 1 to input
-    protected static int maxLength(int input) {
-        return (int) (Math.pow(26, input) - 1) * 26 / (26 - 1);
-    }
-
-
     @Override
     public int getRowCount() {
         return row + 1;
@@ -64,7 +35,7 @@ public class TableModel implements javax.swing.table.TableModel {
 
     @Override
     public final String getColumnName(int index) {
-        return convertColumn(index);
+        return Location.convertColumn(index);
     }
 
     @Override
@@ -74,7 +45,7 @@ public class TableModel implements javax.swing.table.TableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return column != 0;
+        return columnIndex != 0;
     }
 
     @Override
@@ -83,13 +54,13 @@ public class TableModel implements javax.swing.table.TableModel {
             return null;
         if (columnIndex <= 0 || columnIndex > column)
             return null;
-        Location location = new Location(getColumnName(columnIndex) + (rowIndex + 1));
+        Location location = new Location(rowIndex, columnIndex);
         return spreadSheet.getValue(location);
     }
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        Location location = new Location(getColumnName(columnIndex) + (rowIndex + 1));
+        Location location = new Location(rowIndex, columnIndex);
         if (aValue instanceof String) {
             String value = ((String) aValue).trim();
             // TODO: not finished yet.
