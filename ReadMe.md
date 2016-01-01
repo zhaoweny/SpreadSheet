@@ -1,6 +1,6 @@
 SpreadSheet-ReImpl
 ====
-This project is basically an re-write of 
+This project is basically an re-implement of 
 [SpreadSheet](https://github.com/zhaoweny/Spreadsheet), which is a dup of 
 [Spreadsheet](https://github.com/sirgraystar/Spreadsheet) from 
 [@sirgraystar](https://github.com/sirgraystar).
