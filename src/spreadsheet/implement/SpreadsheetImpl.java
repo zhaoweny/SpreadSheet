@@ -2,13 +2,10 @@ package spreadsheet.implement;
 
 import spreadsheet.api.SpreadSheet;
 import spreadsheet.api.cell.Location;
-import spreadsheet.api.value.Value;
-import spreadsheet.api.value.vInvalid;
+import spreadsheet.api.value.*;
+import spreadsheet.parser.Parser;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -58,17 +55,118 @@ public class SpreadsheetImpl implements SpreadSheet {
 
     @Override
     public String getExpression(Location location) {
-        return null;
+        return getCellAt(location).getExpression();
     }
 
     @Override
     public Value getValue(Location location) {
-        return null;
+        return getCellAt(location).getValue();
     }
 
     @Override
     public void reCompute() {
+        for (CellImpl cell : modified) {
+            cell.setModified(false);
+            checkLoops(cell, null);
 
+            if (cell.getValue() != vLoop.INSTANCE) {
+                if (cell.isModified()) {
+                    cell.setValue(new vInvalid(cell.getExpression()));
+                } else if (!ignore.contains(cell)) {
+                    reComputeCell(cell);
+                }
+            }
+            modified.remove(cell);
+        }
+        ignore.clear();
+    }
+
+    private void reComputeCell(CellImpl target) {
+        Deque<CellImpl> deque = new ArrayDeque<>();
+        deque.offer(target);
+
+        while (!deque.isEmpty()) {
+            CellImpl current = deque.poll();
+            boolean computeReference = false;
+            for (CellImpl child : getChildren(current)) {
+                if (modified.contains(child) &&
+                        !ignore.contains(child)) {
+                    deque.offer(child);
+                    computeReference = true;
+                }
+            }
+            deque.offer(current);
+            if (!computeReference) {
+                current.setValue(calculateValueOf(current));
+                ignore.add(current);
+                deque.remove(current);
+            }
+        }
+    }
+
+    private Value calculateValueOf(CellImpl target) {
+        Parser parser = new Parser();
+
+        for (CellImpl child : getChildren(target)) {
+            child.getValue().visit(new ValueVisitor() {
+                @Override
+                public void visitLoop() {
+
+                }
+
+                @Override
+                public void visitInvalid(String exp) {
+
+                }
+
+                @Override
+                public void visitNumber(double val) {
+                    parser.addVariable(child.getLocation().toString(), val);
+                }
+
+                @Override
+                public void visitString(String exp) {
+
+                }
+            });
+        }
+        parser.parse(target.getExpression());
+        if (parser.isValid()){
+            return new vDouble(parser.getDouble());
+        }
+        return new vString(target.getExpression());
+    }
+
+    private void checkLoops(CellImpl target, Set<CellImpl> cellSeen) {
+        if (cellSeen == null)
+            cellSeen = new HashSet<>();
+
+        if (cellSeen.contains(target)) {
+            markAsLoop(target, cellSeen);
+            return;
+        }
+
+        cellSeen.add(target);
+        for (CellImpl child : getChildren(target)) {
+            checkLoops(child, cellSeen);
+        }
+
+        cellSeen.remove(target);
+    }
+
+    private void markAsLoop(CellImpl target, Set<CellImpl> cellSet) {
+        boolean loopConfirmed = false;
+
+        for (CellImpl cell : cellSet) {
+            cell.setModified(true);
+
+            if (cell.getLocation().equals(target.getLocation()))
+                loopConfirmed = true;
+        }
+
+        if (loopConfirmed)
+            for (CellImpl cell : cellSet)
+                cell.setValue(vLoop.INSTANCE);
     }
 
     public Set<CellImpl> getModified() {

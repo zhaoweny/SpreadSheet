@@ -92,11 +92,22 @@ public class CellImpl implements Cell {
             for (Cell cell : referThis)
                 cell.update(this);
         }
-
     }
 
     @Override
     public String toString() {
         return String.format("(%s->%s)", location, expression);
+    }
+
+    public void setModified(boolean modified) {
+        this.isModified = modified;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public boolean isModified() {
+        return isModified;
     }
 }
