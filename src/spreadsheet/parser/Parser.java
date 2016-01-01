@@ -7,24 +7,26 @@ import org.nfunk.jep.JEP;
  * SimpleExcel
  */
 public class Parser {
-    private Parser() {
-    }
-
-    private static JEP parse(String exp) {
-        JEP jep = new JEP();
+    JEP jep = new JEP();
+    public Parser() {
         jep.addStandardConstants();
         jep.addStandardFunctions();
-        jep.parseExpression(exp);
-        return jep;
     }
 
-    public static double parseDouble(String exp) {
-        JEP jep = parse(exp);
+    public Parser parse(String exp){
+        jep.parseExpression(exp);
+        return this;
+    }
+
+    public double getDouble() {
         return jep.getValue();
     }
 
-    public static boolean isFormula(String exp) {
-        JEP jep = parse(exp);
+    public boolean isValid() {
         return jep.getValueAsObject() != null;
+    }
+
+    public void addVariable(String variable, double value){
+        jep.addVariable(variable,value);
     }
 }
