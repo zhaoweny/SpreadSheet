@@ -69,4 +69,12 @@ public class Location {
     public static int maxLength(int input) {
         return (int) (Math.pow(26, input) - 1) * 26 / (26 - 1);
     }
+
+    public static boolean isValidLocation(Location target) {
+        return isValidLocation(target.toString());
+    }
+
+    public static boolean isValidLocation(String exp) {
+        return exp.matches("^[a-zA-z]+([1-9]|\\d{2,})$");
+    }
 }

@@ -49,4 +49,17 @@ public class TestLocation {
         Location expect = new Location("a2");
         Assert.assertEquals(expect, target);
     }
+
+    @Test
+    public void testIsLocationValid() {
+        Location target = new Location(1, 1);
+        Assert.assertTrue(Location.isValidLocation(target));
+    }
+
+    @Test
+    public void testIsLocationInvalid() {
+        Location target = new Location("x0");
+        Assert.assertFalse("target " + target.toString() + " should not be valid!",
+                Location.isValidLocation(target));
+    }
 }
