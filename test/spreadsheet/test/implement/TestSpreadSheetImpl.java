@@ -18,9 +18,9 @@ public class TestSpreadSheetImpl {
     public void testGetCellAt() {
         Location location = new Location(1, 1);
         SpreadsheetImpl spreadsheet = new SpreadsheetImpl();
-        CellImpl cell = spreadsheet.getCellAt(location);
+        CellImpl cell = spreadsheet.InsertCellIfNotExistAt(location);
         Assert.assertNotNull(cell);
-        Assert.assertEquals(cell, spreadsheet.getCellAt(location));
+        Assert.assertEquals(cell, spreadsheet.InsertCellIfNotExistAt(location));
     }
 
     @Test

@@ -11,6 +11,7 @@ import spreadsheet.api.value.Value;
  */
 public interface SpreadSheet {
     void setExpression(Location location, String expression);
+
     String getExpression(Location location);
 
     Value getValue(Location location);

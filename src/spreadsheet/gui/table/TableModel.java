@@ -35,7 +35,7 @@ public class TableModel implements javax.swing.table.TableModel {
 
     @Override
     public final String getColumnName(int index) {
-        return Location.convertColumn(index);
+        return Location.convertColumn(index-1);
     }
 
     @Override
@@ -63,9 +63,9 @@ public class TableModel implements javax.swing.table.TableModel {
         Location location = new Location(rowIndex, columnIndex);
         if (aValue instanceof String) {
             String value = ((String) aValue).trim();
-            // TODO: not finished yet.
-        }
 
+            spreadSheet.setExpression(location, value);
+        }
     }
 
     @Override
@@ -76,8 +76,5 @@ public class TableModel implements javax.swing.table.TableModel {
     @Override
     public void removeTableModelListener(TableModelListener l) {
         listenerList.remove(TableModelListener.class, l);
-
     }
-
-
 }

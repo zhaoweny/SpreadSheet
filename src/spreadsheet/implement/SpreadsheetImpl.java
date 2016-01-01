@@ -19,7 +19,7 @@ public class SpreadsheetImpl implements SpreadSheet {
     private Set<CellImpl> modified = new HashSet<>();
     private Set<CellImpl> ignore = new HashSet<>();
 
-    public CellImpl getCellAt(Location location) {
+    public CellImpl InsertCellIfNotExistAt(Location location) {
         CellImpl cell = locationCellMap.get(location);
         if (cell == null) {
             cell = new CellImpl(this, location);
@@ -27,6 +27,10 @@ public class SpreadsheetImpl implements SpreadSheet {
             locationCellMap.put(location, cell);
         }
         return cell;
+    }
+
+    public CellImpl getCellAt(Location location){
+        return locationCellMap.get(location);
     }
 
     public static Set<Location> getReferredLocation(String exp) {
@@ -42,12 +46,12 @@ public class SpreadsheetImpl implements SpreadSheet {
 
     public Set<CellImpl> getChildren(CellImpl cell) {
         Set<Location> childrenLocation = getReferredLocation(cell.getExpression());
-        return childrenLocation.stream().map(this::getCellAt).collect(Collectors.toSet());
+        return childrenLocation.stream().map(this::InsertCellIfNotExistAt).collect(Collectors.toSet());
     }
 
     @Override
     public void setExpression(Location location, String expression) {
-        CellImpl cell = getCellAt(location);
+        CellImpl cell = InsertCellIfNotExistAt(location);
         if (!modified.contains(cell) || cell.getExpression().equals(expression))
             cell.setExpression(expression);
         cell.setValue(new vInvalid(expression));
@@ -55,12 +59,12 @@ public class SpreadsheetImpl implements SpreadSheet {
 
     @Override
     public String getExpression(Location location) {
-        return getCellAt(location).getExpression();
+        return InsertCellIfNotExistAt(location).getExpression();
     }
 
     @Override
     public Value getValue(Location location) {
-        return getCellAt(location).getValue();
+        return InsertCellIfNotExistAt(location).getValue();
     }
 
     @Override

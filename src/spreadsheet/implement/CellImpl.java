@@ -74,7 +74,7 @@ public class CellImpl implements Cell {
         setValue(new vInvalid(expression));
 
         for (Location location : SpreadsheetImpl.getReferredLocation(expression)) {
-            CellImpl cell = spreadSheet.getCellAt(location);
+            CellImpl cell = spreadSheet.InsertCellIfNotExistAt(location);
             thisRefer.add(cell);
             cell.referThis.add(this);
         }

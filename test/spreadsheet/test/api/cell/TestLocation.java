@@ -18,25 +18,25 @@ public class TestLocation {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConvertColumnThrowsException() {
-        assertEqualsOnConvertColumn(null, 0);
+        assertEqualsOnConvertColumn(null, -1);
     }
 
     @Test
     public void testConvertColumnAppend() {
-        assertEqualsOnConvertColumn("aa", 27);
-        assertEqualsOnConvertColumn("ab", 28);
+        assertEqualsOnConvertColumn("aa", 26);
+        assertEqualsOnConvertColumn("ab", 27);
     }
 
     @Test
     public void testConvertColumnRandom() {
-        assertEqualsOnConvertColumn("fq", 173);
-        assertEqualsOnConvertColumn("abt", 748);
+        assertEqualsOnConvertColumn("fq", 172);
+        assertEqualsOnConvertColumn("abt", 747);
     }
 
     @Test
     public void testConvertColumnNormal() {
-        assertEqualsOnConvertColumn("a", 1);
-        assertEqualsOnConvertColumn("z", 26);
+        assertEqualsOnConvertColumn("a", 0);
+        assertEqualsOnConvertColumn("z", 25);
     }
 
     private void assertEqualsOnConvertColumn(String expected, int index) {
@@ -46,7 +46,7 @@ public class TestLocation {
     @Test
     public void testLocationConstructor() {
         Location target = new Location(1, 1);
-        Location expect = new Location("a2");
+        Location expect = new Location("b2");
         Assert.assertEquals(expect, target);
     }
 

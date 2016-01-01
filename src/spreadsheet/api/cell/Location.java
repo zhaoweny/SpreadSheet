@@ -43,11 +43,9 @@ public class Location {
     }
 
     public static String convertColumn(int index) {
-        if (index <= 0) {
+        if (index < 0) {
             throw new IllegalArgumentException("index can't be " + index);
         }
-
-        index--;
 
         int n = 0;
         while (index >= maxLength(n))
