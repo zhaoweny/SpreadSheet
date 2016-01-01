@@ -13,7 +13,7 @@ import java.util.Set;
  * Created by zhaow on 1/1/2016.
  * SimpleExcel
  */
-public class SpreadSheetImplTest {
+public class TestSpreadSheetImpl {
     @Test
     public void testGetCellAt() {
         Location location = new Location(1, 1);
