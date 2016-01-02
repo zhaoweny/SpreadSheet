@@ -8,11 +8,12 @@ This project is basically an re-implement of
 Dependency
 -----
 
-This project depend on these project followed:
+This project depend on these project followed to work corrrectly:
 
  * [JEP](http://www.cse.msu.edu/SENS/Software/jep-2.23/doc/website/index.html) from 
  [cse.msu.edu](http://cse.msu.edu).
  * [JUnit](http://junit.org) if you want to run the test.
+ * [OpenCSV](http://opencsv.sourceforge.net/) for the csv reader/writer support.
  
 License
 -----
