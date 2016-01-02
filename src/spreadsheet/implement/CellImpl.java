@@ -37,9 +37,11 @@ public class CellImpl implements Cell {
 
         CellImpl cell = (CellImpl) o;
 
-        return spreadSheet != null ? spreadSheet.equals(cell.spreadSheet) : cell.spreadSheet == null &&
-                (location != null ? location.equals(cell.location) : cell.location == null &&
-                        (expression != null ? expression.equals(cell.expression) : cell.expression == null));
+        if (isModified != cell.isModified) return false;
+        if (spreadSheet != null ? !spreadSheet.equals(cell.spreadSheet) : cell.spreadSheet != null) return false;
+        if (location != null ? !location.equals(cell.location) : cell.location != null) return false;
+        if (expression != null ? !expression.equals(cell.expression) : cell.expression != null) return false;
+        return true;
 
     }
 
@@ -48,6 +50,7 @@ public class CellImpl implements Cell {
         int result = spreadSheet != null ? spreadSheet.hashCode() : 0;
         result = 31 * result + (location != null ? location.hashCode() : 0);
         result = 31 * result + (expression != null ? expression.hashCode() : 0);
+        result = 31 * result + (isModified ? 1 : 0);
         return result;
     }
 
@@ -64,6 +67,8 @@ public class CellImpl implements Cell {
     }
 
     public void setExpression(String expression) {
+        if (expression.startsWith("="))
+            expression = expression.replaceFirst("=", "");
         for (CellImpl cell : thisRefer) {
             cell.referThis.remove(this);
         }
@@ -72,6 +77,7 @@ public class CellImpl implements Cell {
         this.expression = expression;
 
         setValue(new vInvalid(expression));
+        spreadSheet.getModified().add(this);
 
         for (Location location : SpreadsheetImpl.getReferredLocation(expression)) {
             CellImpl cell = spreadSheet.InsertCellIfNotExistAt(location);
@@ -96,7 +102,7 @@ public class CellImpl implements Cell {
 
     @Override
     public String toString() {
-        return String.format("(%s->%s)", location, expression);
+        return String.format("%s = %s", location, expression);
     }
 
     public void setModified(boolean modified) {
