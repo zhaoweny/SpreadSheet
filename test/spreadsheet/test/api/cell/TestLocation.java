@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import spreadsheet.api.cell.Location;
 
+import static org.junit.Assert.*;
+
 /**
  * Created by zhaow on 12/30/2015.
  * SimpleExcel
@@ -11,8 +13,8 @@ import spreadsheet.api.cell.Location;
 public class TestLocation {
     @Test
     public void testMaxLength() {
-        Assert.assertEquals(26 * 27, Location.maxLength(2));
-        Assert.assertEquals((int) (26 + Math.pow(26, 2) + Math.pow(26, 3)),
+        assertEquals(26 * 27, Location.maxLength(2));
+        assertEquals((int) (26 + Math.pow(26, 2) + Math.pow(26, 3)),
                 Location.maxLength(3));
     }
 
@@ -40,26 +42,42 @@ public class TestLocation {
     }
 
     private void assertEqualsOnConvertColumn(String expected, int index) {
-        Assert.assertEquals(expected, Location.convertColumn(index));
+        assertEquals(expected, Location.convertColumn(index));
     }
 
     @Test
     public void testLocationConstructor() {
         Location target = new Location(1, 1);
         Location expect = new Location("b2");
-        Assert.assertEquals(expect, target);
+        assertEquals(expect, target);
     }
 
     @Test
     public void testIsLocationValid() {
         Location target = new Location(1, 1);
-        Assert.assertTrue(Location.isValidLocation(target));
+        assertTrue(Location.isValidLocation(target));
     }
 
     @Test
     public void testIsLocationInvalid() {
         Location target = new Location("x0");
-        Assert.assertFalse("target " + target.toString() + " should not be valid!",
+        assertFalse("target " + target.toString() + " should not be valid!",
                 Location.isValidLocation(target));
+    }
+
+    @Test
+    public void testEqualSameObject(){
+        Location target = new Location(0,0);
+        assertEquals(target,target);
+    }
+    @Test
+    public void testEqualNotInstance(){
+        Location target = new Location(0,0);
+        assertNotEquals(target, new Object());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testNullStringConstructor(){
+        new Location(null);
     }
 }
