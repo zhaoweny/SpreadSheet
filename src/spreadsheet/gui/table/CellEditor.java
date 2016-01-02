@@ -14,7 +14,7 @@ public class CellEditor extends DefaultCellEditor {
     private JTextField textField;
     private SpreadSheet spreadSheet;
 
-    public CellEditor(JTextField textField, SpreadSheet spreadSheet) {
+    public CellEditor(SpreadSheet spreadSheet, JTextField textField) {
         super(textField);
         this.textField = textField;
         this.spreadSheet = spreadSheet;
