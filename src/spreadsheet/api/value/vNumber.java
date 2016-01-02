@@ -4,10 +4,10 @@ package spreadsheet.api.value;
  * Created by zhaow on 12/30/2015.
  * SimpleExcel
  */
-public class vDouble implements Value {
+public class vNumber implements Value {
     private final double value;
 
-    public vDouble(double value) {
+    public vNumber(double value) {
         this.value = value;
     }
 
@@ -26,7 +26,7 @@ public class vDouble implements Value {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        vDouble that = (vDouble) o;
+        vNumber that = (vNumber) o;
 
         return Double.compare(that.value, value) == 0;
 
