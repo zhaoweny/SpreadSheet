@@ -29,7 +29,7 @@ public class SpreadsheetImpl implements SpreadSheet {
         return cell;
     }
 
-    public CellImpl getCellAt(Location location){
+    public CellImpl getCellAt(Location location) {
         return locationCellMap.get(location);
     }
 
@@ -52,7 +52,7 @@ public class SpreadsheetImpl implements SpreadSheet {
     @Override
     public void setExpression(Location location, String expression) {
         CellImpl cell = InsertCellIfNotExistAt(location);
-        if (!modified.contains(cell) || cell.getExpression().equals(expression))
+        if (!modified.contains(cell) || !cell.getExpression().equals(expression))
             cell.setExpression(expression);
         cell.setValue(new vInvalid(expression));
     }
@@ -69,7 +69,10 @@ public class SpreadsheetImpl implements SpreadSheet {
 
     @Override
     public void reCompute() {
-        for (CellImpl cell : modified) {
+        Iterator<CellImpl> iterator = modified.iterator();
+        while (iterator.hasNext()) {
+            CellImpl cell = iterator.next();
+
             cell.setModified(false);
             checkLoops(cell, null);
 
@@ -80,7 +83,7 @@ public class SpreadsheetImpl implements SpreadSheet {
                     reComputeCell(cell);
                 }
             }
-            modified.remove(cell);
+            iterator.remove();
         }
         ignore.clear();
     }
@@ -109,34 +112,34 @@ public class SpreadsheetImpl implements SpreadSheet {
     }
 
     private Value calculateValueOf(CellImpl target) {
+        Map<String, Double> map = new HashMap<>();
+
+        getChildren(target).stream().filter(child -> child.getValue() != null).
+                forEach(child -> child.getValue().visit(new ValueVisitor() {
+            @Override
+            public void visitLoop() {
+
+            }
+
+            @Override
+            public void visitInvalid(String exp) {
+
+            }
+
+            @Override
+            public void visitNumber(double val) {
+                map.put(child.getLocation().toString(), val);
+            }
+
+            @Override
+            public void visitString(String exp) {
+
+            }
+        }));
         Parser parser = new Parser();
-
-        for (CellImpl child : getChildren(target)) {
-            child.getValue().visit(new ValueVisitor() {
-                @Override
-                public void visitLoop() {
-
-                }
-
-                @Override
-                public void visitInvalid(String exp) {
-
-                }
-
-                @Override
-                public void visitNumber(double val) {
-                    parser.addVariable(child.getLocation().toString(), val);
-                }
-
-                @Override
-                public void visitString(String exp) {
-
-                }
-            });
-        }
         parser.parse(target.getExpression());
-        if (parser.isValid()){
-            return new vDouble(parser.getDouble());
+        if (parser.isValid()) {
+            return new vNumber(parser.getDouble());
         }
         return new vString(target.getExpression());
     }
@@ -167,7 +170,6 @@ public class SpreadsheetImpl implements SpreadSheet {
             if (cell.getLocation().equals(target.getLocation()))
                 loopConfirmed = true;
         }
-
         if (loopConfirmed)
             for (CellImpl cell : cellSet)
                 cell.setValue(vLoop.INSTANCE);

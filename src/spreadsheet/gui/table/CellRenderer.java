@@ -101,4 +101,17 @@ public class CellRenderer extends DefaultTableCellRenderer {
         setValue(value);
         return this;
     }
+
+    @Override
+    protected void firePropertyChange(String propertyName, Object oldValue,
+                                      Object newValue) {
+    }
+
+    @Override
+    public void invalidate() {
+    }
+
+    @Override
+    public void repaint() {
+    }
 }

@@ -49,7 +49,7 @@ public class TestCsvAdapter {
 
     @Test
     public void TestCsvAdapterReadRecomputeAndWrite() throws IOException {
-        String src = "\"1\",\"a\"\n\"2\",\"b\"\n";
+        String src = "\"1.0\",\"a\"\n\"2.0\",\"b\"\n";
         Assert.assertEquals(src, readAndWrite(src, 2, 2, true));
     }
 

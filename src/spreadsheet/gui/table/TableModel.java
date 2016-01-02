@@ -3,7 +3,9 @@ package spreadsheet.gui.table;
 import spreadsheet.api.SpreadSheet;
 import spreadsheet.api.cell.Location;
 
+import javax.crypto.IllegalBlockSizeException;
 import javax.swing.event.EventListenerList;
+import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 /**
@@ -17,7 +19,7 @@ public class TableModel implements javax.swing.table.TableModel {
 
     private EventListenerList listenerList = new EventListenerList();
 
-    public TableModel(int row, int column, SpreadSheet spreadSheet) {
+    public TableModel(SpreadSheet spreadSheet, int row, int column) {
         this.row = row;
         this.column = column;
         this.spreadSheet = spreadSheet;
@@ -25,7 +27,7 @@ public class TableModel implements javax.swing.table.TableModel {
 
     @Override
     public int getRowCount() {
-        return row + 1;
+        return row;
     }
 
     @Override
@@ -35,7 +37,11 @@ public class TableModel implements javax.swing.table.TableModel {
 
     @Override
     public final String getColumnName(int index) {
-        return Location.convertColumn(index-1);
+        try{
+            return Location.convertColumn(index);
+        }catch (IllegalArgumentException e){
+            return "";
+        }
     }
 
     @Override
@@ -52,7 +58,7 @@ public class TableModel implements javax.swing.table.TableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         if (rowIndex < 0 || rowIndex > row)
             return null;
-        if (columnIndex <= 0 || columnIndex > column)
+        if (columnIndex < 0 || columnIndex > column)
             return null;
         Location location = new Location(rowIndex, columnIndex);
         return spreadSheet.getValue(location);
@@ -76,5 +82,17 @@ public class TableModel implements javax.swing.table.TableModel {
     @Override
     public void removeTableModelListener(TableModelListener l) {
         listenerList.remove(TableModelListener.class, l);
+    }
+
+    public void fireTableDataChanged() {
+        TableModelEvent event = null;
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == TableModelListener.class) {
+                if (event == null)
+                    event = new TableModelEvent(this);
+                ((TableModelListener) listeners[i + 1]).tableChanged(event);
+            }
+        }
     }
 }

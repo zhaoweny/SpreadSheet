@@ -30,7 +30,16 @@ public class testParser {
         Parser parser = new Parser();
         parser.addVariable("a1", 2.0);
         parser.addVariable("ab23", 3.0);
-        String expression = "a1+ab23";
+        String expression = "=a1+ab23";
         Assert.assertTrue(isValid(parser, expression));
+    }
+
+    @Test
+    public void testValidFormula() throws Exception {
+        Parser parser = new Parser();
+        parser.addVariable("a1", 2.0);
+        parser.addVariable("ab23", 3.0);
+        String expression = "a1+ab23";
+        Assert.assertTrue(5 == parser.parse(expression).getDouble());
     }
 }

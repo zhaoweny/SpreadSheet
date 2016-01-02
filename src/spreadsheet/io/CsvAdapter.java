@@ -8,7 +8,9 @@ import spreadsheet.api.value.ValueVisitor;
 import spreadsheet.implement.CellImpl;
 import spreadsheet.implement.SpreadsheetImpl;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,37 +49,38 @@ public class CsvAdapter {
         for (int i = 0; i < maxRow; i++) {
             StringBuilder builder = new StringBuilder();
             for (int j = 0; j < maxCol; j++) {
-                Location location = new Location(i,j);
+                Location location = new Location(i, j);
                 CellImpl cell = spreadsheet.getCellAt(location);
-                if (cell!=null) {
-                    cell.getValue().visit(new ValueVisitor() {
-                        @Override
-                        public void visitLoop() {
+                if (cell != null) {
+                    if (cell.getValue() != null)
+                        cell.getValue().visit(new ValueVisitor() {
+                            @Override
+                            public void visitLoop() {
 
-                        }
+                            }
 
-                        @Override
-                        public void visitInvalid(String exp) {
-                            builder.append(exp);
-                        }
+                            @Override
+                            public void visitInvalid(String exp) {
+                                builder.append(exp);
+                            }
 
-                        @Override
-                        public void visitNumber(double val) {
-                            builder.append(Double.toString(val));
-                        }
+                            @Override
+                            public void visitNumber(double val) {
+                                builder.append(Double.toString(val));
+                            }
 
-                        @Override
-                        public void visitString(String exp) {
-                            builder.append(exp);
-                        }
-                    });
+                            @Override
+                            public void visitString(String exp) {
+                                builder.append(exp);
+                            }
+                        });
                 }
                 builder.append(Write_Separator);
             }
             builder.deleteCharAt(builder.lastIndexOf(Write_Separator));
             List<String> list = new ArrayList<>();
             Collections.addAll(list, builder.toString().split(Write_Separator));
-            if (builder.lastIndexOf(Write_Separator)==builder.length()-1)
+            if (builder.lastIndexOf(Write_Separator) == builder.length() - 1)
                 list.add("");
             String[] pending = new String[list.size()];
             list.toArray(pending);
