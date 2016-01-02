@@ -19,4 +19,20 @@ public class vString implements Value {
     public String toString() {
         return exp;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        vString vString = (vString) o;
+
+        return exp != null ? exp.equals(vString.exp) : vString.exp == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return exp != null ? exp.hashCode() : 0;
+    }
 }
