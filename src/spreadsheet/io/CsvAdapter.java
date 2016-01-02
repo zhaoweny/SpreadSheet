@@ -10,7 +10,6 @@ import spreadsheet.implement.SpreadsheetImpl;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,7 +18,7 @@ import java.util.List;
  * SimpleExcel
  */
 public class CsvAdapter {
-    private static final String Write_Seperator = "#";
+    private static final String Write_Separator = "#";
 
     public static void read(Reader src, SpreadSheet spreadSheet) throws IOException {
         CSVReader reader = new CSVReader(src);
@@ -73,12 +72,12 @@ public class CsvAdapter {
                         }
                     });
                 }
-                builder.append(Write_Seperator);
+                builder.append(Write_Separator);
             }
-            builder.deleteCharAt(builder.lastIndexOf(Write_Seperator));
+            builder.deleteCharAt(builder.lastIndexOf(Write_Separator));
             List<String> list = new ArrayList<>();
-            Collections.addAll(list, builder.toString().split(Write_Seperator));
-            if (builder.lastIndexOf(Write_Seperator)==builder.length()-1)
+            Collections.addAll(list, builder.toString().split(Write_Separator));
+            if (builder.lastIndexOf(Write_Separator)==builder.length()-1)
                 list.add("");
             String[] pending = new String[list.size()];
             list.toArray(pending);
