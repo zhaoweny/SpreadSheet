@@ -6,6 +6,7 @@ import org.junit.Test;
 import spreadsheet.api.cell.Location;
 import spreadsheet.api.value.Value;
 import spreadsheet.api.value.ValueVisitor;
+import spreadsheet.api.value.vLoop;
 import spreadsheet.implement.CellImpl;
 import spreadsheet.implement.SpreadsheetImpl;
 
@@ -78,20 +79,20 @@ public class TestSpreadSheetImpl {
     public void testGetAndSetExpression() {
         Location location = new Location(0, 0);
         String expression = "10";
-        spreadsheet.setExpression(location, expression);
+        setExp(location, expression);
         assertEquals(expression, spreadsheet.getExpression(location));
     }
 
     @Test
     public void testGetAndSetExpressionWithReference() {
         String expression = "10*a2+9*a3+8*a4+a5+a6+a7+a6";
-        spreadsheet.setExpression(a1, expression);
+        setExp(a1, expression);
         assertEquals(expression, spreadsheet.getExpression(a1));
     }
 
     @Test
     public void testGetValue() throws Exception {
-        assertNull(spreadsheet.getValue(new Location(0, 0)));
+        assertNull(getVal(new Location(0, 0)));
     }
 
     private final static Location a1 = new Location("a1");
@@ -99,69 +100,142 @@ public class TestSpreadSheetImpl {
     private final static Location a3 = new Location("a3");
 
     @Test
+    public void testCheckLoopsNoReference() throws Exception {
+        setExp(a1, "1");
+        setExp(a2, "1");
+
+        chkLoop(a1);
+        assertNotLoop(a1);
+        chkLoop(a2);
+        assertNotLoop(a2);
+    }
+
+    @Test
+    public void testCheckLoopsNormalReference() throws Exception {
+        setExp(a1, "a2");
+        setExp(a2, "1");
+
+        chkLoop(a1);
+        assertNotLoop(a1);
+        chkLoop(a2);
+        assertNotLoop(a2);
+    }
+
+    @Test
+    public void testCheckLoopsComplexReference() throws Exception {
+        setExp(a1, "a2+a3");
+        setExp(a2, "a4+a5");
+        setExp(a3, "a2+a4+a5");
+        setExp(new Location("a4"), "0.1");
+        setExp(new Location("a5"), "0.2");
+
+        chkLoop(a1);
+        assertNotLoop(a1);
+        chkLoop(a2);
+        assertNotLoop(a2);
+        chkLoop(a3);
+        assertNotLoop(a3);
+    }
+    private void assertNotLoop(Location loc){
+        assertNotEquals(getVal(loc), vLoop.INSTANCE);
+    }
+
+    @Test
+    public void testCheckLoopsDirectLoopReference() throws Exception {
+        setExp(a1, "a1");
+        chkLoop(a1);
+        assertIsLoop(a1);
+    }
+
+    @Test
+    public void testCheckLoopsCircleLoopReference() throws Exception {
+        setExp(a1, "a2");
+        setExp(a2, "a3");
+        setExp(a3, "a1");
+        chkLoop(a1);
+        assertIsLoop(a1);
+    }
+
+    @Test
     public void testReComputeNoReference() throws Exception {
-        spreadsheet.setExpression(a1, "1");
-        spreadsheet.setExpression(a2, "1");
+        setExp(a1, "1");
+        setExp(a2, "1");
         spreadsheet.reCompute();
 
-        assertIsNumber(spreadsheet.getValue(a1), 1);
-        assertIsNumber(spreadsheet.getValue(a2), 1);
+        assertIsNumber(getVal(a1), 1);
+        assertIsNumber(getVal(a2), 1);
     }
 
     @Test
     public void testReComputeSimpleReference() throws Exception {
-        spreadsheet.setExpression(a1, "a2");
-        spreadsheet.setExpression(a2, "1");
+        setExp(a1, "a2");
+        setExp(a2, "1");
         spreadsheet.reCompute();
 
-        assertIsNumber(spreadsheet.getValue(a1), 1);
-        assertIsNumber(spreadsheet.getValue(a2), 1);
+        assertIsNumber(getVal(a1), 1);
+        assertIsNumber(getVal(a2), 1);
     }
 
     @Test
     public void testReComputeLoopReference() throws Exception {
-        spreadsheet.setExpression(a1, "a2");
-        spreadsheet.setExpression(a2, "a3");
-        spreadsheet.setExpression(a3, "a1");
+        setExp(a1, "a2");
+        setExp(a2, "a3");
+        setExp(a3, "a1");
         spreadsheet.reCompute();
-        assertIsLoop(spreadsheet.getValue(a1));
-        assertIsLoop(spreadsheet.getValue(a2));
-        assertIsLoop(spreadsheet.getValue(a3));
+        assertIsLoop(a1);
+        assertIsLoop(a2);
+        assertIsLoop(a3);
     }
 
     @Test
     public void testReComputeStringReference() throws Exception {
-        spreadsheet.setExpression(a1, "foobar");
-        spreadsheet.setExpression(a2, "a1");
+        setExp(a1, "foobar");
+        setExp(a2, "a1");
         spreadsheet.reCompute();
-        assertIsString(spreadsheet.getValue(a1), "foobar");
-        assertIsString(spreadsheet.getValue(a2), "a1");
+        assertIsString(getVal(a1), "foobar");
+        assertIsString(getVal(a2), "a1");
     }
 
     @Test
     public void testReComputeChainedReference() throws Exception {
-        spreadsheet.setExpression(a1, "a2");
-        spreadsheet.setExpression(a2, "a3");
-        spreadsheet.setExpression(a3, "1.0");
+        setExp(a1, "a2");
+        setExp(a2, "a3");
+        setExp(a3, "1.0");
         spreadsheet.reCompute();
-        assertIsNumber(spreadsheet.getValue(a1), 1);
-        assertIsNumber(spreadsheet.getValue(a2), 1);
-        assertIsNumber(spreadsheet.getValue(a3), 1);
+        assertIsNumber(getVal(a1), 1);
+        assertIsNumber(getVal(a2), 1);
+        assertIsNumber(getVal(a3), 1);
     }
 
     //@Test
     public void testReComputeComplexReference() throws Exception {
-        spreadsheet.setExpression(a1, "a2+a3");
-        spreadsheet.setExpression(a2, "a4+a5");
-        spreadsheet.setExpression(a3, "a2+a4+a5");
-        spreadsheet.setExpression(new Location("a4"), "0.1");
-        spreadsheet.setExpression(new Location("a5"), "0.2");
+        setExp(a1, "a2+a3");
+        setExp(a2, "a4+a5");
+        setExp(a3, "a2+a4+a5");
+        setExp(new Location("a4"), "0.1");
+        setExp(new Location("a5"), "0.2");
 
         spreadsheet.reCompute();
 
-        assertIsNumber(spreadsheet.getValue(a1), 0.9);
-        assertIsNumber(spreadsheet.getValue(a2), 0.3);
-        assertIsNumber(spreadsheet.getValue(a3), 0.6);
+        assertIsNumber(getVal(a1), 0.9);
+        assertIsNumber(getVal(a2), 0.3);
+        assertIsNumber(getVal(a3), 0.6);
+    }
+
+    private void setExp(Location loc, String exp) {
+        spreadsheet.setExpression(loc, exp);
+    }
+    
+    private Value getVal(Location loc){
+        return spreadsheet.getValue(loc);
+    }
+
+    private void chkLoop(Location loc){
+        spreadsheet.checkLoops(spreadsheet.getCellAt(loc),null);
+    }
+
+    private void assertIsLoop(Location loc){
+        assertIsLoop(getVal(loc));
     }
 
     private static void assertIsLoop(Value target) {

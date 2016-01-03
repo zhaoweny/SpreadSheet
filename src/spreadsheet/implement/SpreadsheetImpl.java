@@ -88,7 +88,7 @@ public class SpreadsheetImpl implements SpreadSheet {
         ignore.clear();
     }
 
-    private void reComputeCell(CellImpl target) {
+    public void reComputeCell(CellImpl target) {
         Deque<CellImpl> deque = new ArrayDeque<>();
         deque.offer(target);
 
@@ -111,7 +111,7 @@ public class SpreadsheetImpl implements SpreadSheet {
         }
     }
 
-    private Value calculateValueOf(CellImpl target) {
+    public Value calculateValueOf(CellImpl target) {
         Map<String, Double> map = new HashMap<>();
 
         getChildren(target).stream().filter(child -> child.getValue() != null).
@@ -137,6 +137,7 @@ public class SpreadsheetImpl implements SpreadSheet {
             }
         }));
         Parser parser = new Parser();
+        parser.addVariablesMap(map);
         parser.parse(target.getExpression());
         if (parser.isValid()) {
             return new vNumber(parser.getDouble());
@@ -144,7 +145,7 @@ public class SpreadsheetImpl implements SpreadSheet {
         return new vString(target.getExpression());
     }
 
-    private void checkLoops(CellImpl target, Set<CellImpl> cellSeen) {
+    public void checkLoops(CellImpl target, Set<CellImpl> cellSeen) {
         if (cellSeen == null)
             cellSeen = new HashSet<>();
 
