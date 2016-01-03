@@ -19,6 +19,17 @@ public class SpreadsheetImpl implements SpreadSheet {
     private Set<CellImpl> modified = new HashSet<>();
     private Set<CellImpl> ignore = new HashSet<>();
 
+    public static Set<Location> getReferredLocation(String exp) {
+        Set<Location> result = new HashSet<>();
+        Pattern p = Pattern.compile("[a-zA-z]+[1-9]\\d*");
+        Matcher m = p.matcher(exp);
+        while (m.find()) {
+            String location = exp.substring(m.start(), m.end());
+            result.add(new Location(location));
+        }
+        return result;
+    }
+
     public CellImpl InsertCellIfNotExistAt(Location location) {
         CellImpl cell = locationCellMap.get(location);
         if (cell == null) {
@@ -31,17 +42,6 @@ public class SpreadsheetImpl implements SpreadSheet {
 
     public CellImpl getCellAt(Location location) {
         return locationCellMap.get(location);
-    }
-
-    public static Set<Location> getReferredLocation(String exp) {
-        Set<Location> result = new HashSet<>();
-        Pattern p = Pattern.compile("[a-zA-z]+[1-9]\\d*");
-        Matcher m = p.matcher(exp);
-        while (m.find()) {
-            String location = exp.substring(m.start(), m.end());
-            result.add(new Location(location));
-        }
-        return result;
     }
 
     public Set<CellImpl> getChildren(CellImpl cell) {
