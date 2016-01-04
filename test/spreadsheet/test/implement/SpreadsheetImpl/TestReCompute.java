@@ -46,6 +46,16 @@ public class TestReCompute extends SpreadSheetImplTestingTools {
         assertEqualsNumber(a3,6);
     }
 
+    @Test
+    public void testLoopReference() throws Exception {
+        setExp(a1, "a2");
+        setExp(a2, "a1");
+        reCompute();
+        assertIsLoop(a1);
+        assertIsLoop(a2);
+
+    }
+
     private void reCompute() {
         spreadsheet.reCompute();
     }
