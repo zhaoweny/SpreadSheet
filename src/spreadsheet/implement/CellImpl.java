@@ -102,7 +102,7 @@ public class CellImpl implements Cell {
 
     @Override
     public String toString() {
-        return String.format("%s = %s", location, expression);
+        return String.format("loc%s,exp%s val%s", location, expression, value);
     }
 
     public void setModified(boolean modified) {
