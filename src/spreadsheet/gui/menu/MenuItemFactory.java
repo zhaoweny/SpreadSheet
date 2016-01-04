@@ -13,9 +13,6 @@ public class MenuItemFactory {
     public MenuItemFactory(){
         list = new ArrayList<>();
     }
-    public MenuItemFactory(ArrayList<JMenuItem> list){
-        this.list = list;
-    }
 
     public void addMenuItem(String text, String key, ActionListener action) {
         JMenuItem item = new JMenuItem();
@@ -26,11 +23,6 @@ public class MenuItemFactory {
         if (key != null)
             item.setAccelerator(KeyStroke.getKeyStroke(key));
         list.add(item);
-    }
-
-    public void addMenuItem(JMenuItem item) {
-        if (item != null)
-            list.add(item);
     }
 
     public ArrayList<JMenuItem> getList() {

@@ -1,7 +1,6 @@
 package spreadsheet.gui;
 
 import org.nfunk.jep.ParseException;
-import spreadsheet.api.SpreadSheet;
 import spreadsheet.api.cell.Location;
 import spreadsheet.gui.menu.MenuBarFactory;
 import spreadsheet.gui.menu.MenuFactory;
@@ -23,7 +22,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 
 /**
  * Created by zhaow on 12/28/2015.
@@ -149,33 +147,33 @@ public class MainFrame extends JFrame {
         MenuFactory menuFactory = new MenuFactory();
 
         itemFactory.addMenuItem("New", "ctrl N", e -> {
-            table.selectAll();
-            table.clearSelection();
+            spreadSheet.clearAll();
+            reCompute();
         });
 
         itemFactory.addMenuItem("Open", "ctrl O", e -> {
             JFileChooser chooser = new JFileChooser();
             int returnVal = chooser.showOpenDialog(this);
-            if (returnVal == JFileChooser.APPROVE_OPTION){
-                try{
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                try {
                     File file = chooser.getSelectedFile();
                     CsvAdapter.read(new FileReader(file), spreadSheet);
                     if (autoComputeCheckBox.isSelected())
                         reCompute();
                     tableModel.fireTableDataChanged();
-                }catch (IOException exception){
+                } catch (IOException exception) {
                     exception.printStackTrace();
                 }
             }
         });
-        itemFactory.addMenuItem("Save", "ctrl S", e->{
+        itemFactory.addMenuItem("Save", "ctrl S", e -> {
             JFileChooser chooser = new JFileChooser();
             int returnVal = chooser.showOpenDialog(this);
-            if (returnVal == JFileChooser.APPROVE_OPTION){
-                try{
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                try {
                     File file = chooser.getSelectedFile();
                     CsvAdapter.write(new FileWriter(file), spreadSheet, MAX_ROW, MAX_COLUMN);
-                }catch (IOException exception){
+                } catch (IOException exception) {
                     exception.printStackTrace();
                 }
             }

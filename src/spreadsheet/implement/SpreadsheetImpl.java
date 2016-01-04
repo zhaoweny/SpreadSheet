@@ -69,6 +69,10 @@ public class SpreadsheetImpl implements SpreadSheet {
 
     @Override
     public void reCompute() {
+        modified.addAll(locationCellMap.entrySet().stream().
+                filter(entry -> entry.getValue().getValue() instanceof vInvalid).
+                map(Map.Entry::getValue).collect(Collectors.toList()));
+
         Iterator<CellImpl> iterator = modified.iterator();
         while (iterator.hasNext()) {
             CellImpl cell = iterator.next();
@@ -117,26 +121,26 @@ public class SpreadsheetImpl implements SpreadSheet {
 
         getChildren(target).stream().filter(child -> child.getValue() != null).
                 forEach(child -> child.getValue().visit(new ValueVisitor() {
-            @Override
-            public void visitLoop() {
+                    @Override
+                    public void visitLoop() {
 
-            }
+                    }
 
-            @Override
-            public void visitInvalid(String exp) {
+                    @Override
+                    public void visitInvalid(String exp) {
 
-            }
+                    }
 
-            @Override
-            public void visitNumber(double val) {
-                valueMap.put(child.getLocation().toString(), val);
-            }
+                    @Override
+                    public void visitNumber(double val) {
+                        valueMap.put(child.getLocation().toString(), val);
+                    }
 
-            @Override
-            public void visitString(String exp) {
-                stringMap.put(child.getLocation().toString(), String.format("\"%s\"", exp));
-            }
-        }));
+                    @Override
+                    public void visitString(String exp) {
+                        stringMap.put(child.getLocation().toString(), String.format("\"%s\"", exp));
+                    }
+                }));
         Parser parser = new Parser();
         parser.addValueMap(valueMap);
         parser.addStringMap(stringMap);
@@ -180,5 +184,11 @@ public class SpreadsheetImpl implements SpreadSheet {
 
     public Set<CellImpl> getModified() {
         return modified;
+    }
+
+    public void clearAll() {
+        locationCellMap.clear();
+        modified.clear();
+        ignore.clear();
     }
 }
