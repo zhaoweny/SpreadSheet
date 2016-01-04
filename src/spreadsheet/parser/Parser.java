@@ -21,6 +21,26 @@ public class Parser {
         jep.addStandardFunctions();
     }
 
+    public static List<String[]> parseCommand(String cmd) throws ParseException {
+        List<String[]> result = new ArrayList<>();
+        StringTokenizer stStatement = new StringTokenizer(cmd, ";");
+        while (stStatement.hasMoreTokens()) {
+            StringTokenizer stAssignment = new StringTokenizer(stStatement.nextToken(), "=");
+            while (stAssignment.hasMoreTokens()) {
+                String left = stAssignment.nextToken().trim();
+                String right = stAssignment.nextToken().trim();
+
+                if (Location.isValidLocation(left)) {
+                    result.add(new String[]{left, right});
+                } else {
+                    throw new ParseException("Invalid Command: " + left + "=" + right);
+                }
+            }
+
+        }
+        return result;
+    }
+
     public Parser parse(String exp) {
         if (exp.startsWith("="))
             exp = exp.replaceFirst("=", "");
@@ -40,28 +60,17 @@ public class Parser {
         jep.addVariable(variable, value);
     }
 
-    public void addVariablesMap(Map<String, Double> map) {
+    public void addVariableAsObject(String variable, String string) {
+        jep.addVariableAsObject(variable, string);
+    }
+
+    public void addValueMap(Map<String, Double> map) {
         for (Map.Entry<String, Double> entry : map.entrySet())
             addVariable(entry.getKey(), entry.getValue());
     }
 
-    public static List<String[]> parseCommand(String cmd) throws ParseException {
-        List<String[]> result = new ArrayList<>();
-        StringTokenizer stStatement = new StringTokenizer(cmd, ";");
-        while (stStatement.hasMoreTokens()) {
-            StringTokenizer stAssignment = new StringTokenizer(stStatement.nextToken(), "=");
-            while (stAssignment.hasMoreTokens()) {
-                String left = stAssignment.nextToken().trim();
-                String right = stAssignment.nextToken().trim();
-
-                if (Location.isValidLocation(left)) {
-                    result.add(new String[]{left, right});
-                } else {
-                    throw new ParseException("Invalid Command: " + left + "=" + right);
-                }
-            }
-
-        }
-        return result;
+    public void addStringMap(Map<String, String> map) {
+        for (Map.Entry<String, String> entry : map.entrySet())
+            addVariableAsObject(entry.getKey(), entry.getValue());
     }
 }

@@ -112,7 +112,8 @@ public class SpreadsheetImpl implements SpreadSheet {
     }
 
     public Value calculateValueOf(CellImpl target) {
-        Map<String, Double> map = new HashMap<>();
+        Map<String, Double> valueMap = new HashMap<>();
+        Map<String, String> stringMap = new HashMap<>();
 
         getChildren(target).stream().filter(child -> child.getValue() != null).
                 forEach(child -> child.getValue().visit(new ValueVisitor() {
@@ -128,16 +129,17 @@ public class SpreadsheetImpl implements SpreadSheet {
 
             @Override
             public void visitNumber(double val) {
-                map.put(child.getLocation().toString(), val);
+                valueMap.put(child.getLocation().toString(), val);
             }
 
             @Override
             public void visitString(String exp) {
-
+                stringMap.put(child.getLocation().toString(), String.format("\"%s\"", exp));
             }
         }));
         Parser parser = new Parser();
-        parser.addVariablesMap(map);
+        parser.addValueMap(valueMap);
+        parser.addStringMap(stringMap);
         parser.parse(target.getExpression());
         if (parser.isValid()) {
             return new vNumber(parser.getDouble());
