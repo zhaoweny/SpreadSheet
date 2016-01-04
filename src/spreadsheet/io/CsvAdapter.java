@@ -5,6 +5,7 @@ import com.opencsv.CSVWriter;
 import spreadsheet.api.SpreadSheet;
 import spreadsheet.api.cell.Location;
 import spreadsheet.api.value.ValueVisitor;
+import spreadsheet.api.value.vLoop;
 import spreadsheet.implement.CellImpl;
 import spreadsheet.implement.SpreadsheetImpl;
 
@@ -20,7 +21,7 @@ import java.util.List;
  * SimpleExcel
  */
 public class CsvAdapter {
-    private static final String Write_Separator = "#";
+    private static final String Write_Separator = "!";
 
     public static void read(Reader src, SpreadSheet spreadSheet) throws IOException {
         CSVReader reader = new CSVReader(src);
@@ -56,7 +57,7 @@ public class CsvAdapter {
                         cell.getValue().visit(new ValueVisitor() {
                             @Override
                             public void visitLoop() {
-
+                                builder.append(vLoop.INSTANCE.toString());
                             }
 
                             @Override

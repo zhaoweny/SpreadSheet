@@ -3,6 +3,7 @@ package spreadsheet.test.io;
 import org.junit.Assert;
 import org.junit.Test;
 import spreadsheet.api.cell.Location;
+import spreadsheet.api.value.vLoop;
 import spreadsheet.implement.SpreadsheetImpl;
 import spreadsheet.io.CsvAdapter;
 
@@ -15,6 +16,19 @@ import java.io.StringWriter;
  * SimpleExcel
  */
 public class TestCsvAdapter {
+    private static String readAndWrite(String src, int row, int col, boolean calc) throws IOException {
+        SpreadsheetImpl target = new SpreadsheetImpl();
+        CsvAdapter.read(new StringReader(src), target);
+
+        if (calc)
+            target.reCompute();
+
+        StringWriter writer = new StringWriter();
+        CsvAdapter.write(writer, target, row, col);
+
+        return writer.toString();
+    }
+
     @Test
     public void TestCsvAdapterWrite() throws IOException {
         SpreadsheetImpl src = new SpreadsheetImpl();
@@ -34,19 +48,6 @@ public class TestCsvAdapter {
         Assert.assertEquals(src, readAndWrite(src, 2, 2, false));
     }
 
-    private static String readAndWrite(String src, int row, int col, boolean calc) throws IOException {
-        SpreadsheetImpl target = new SpreadsheetImpl();
-        CsvAdapter.read(new StringReader(src), target);
-
-        if (calc)
-            target.reCompute();
-
-        StringWriter writer = new StringWriter();
-        CsvAdapter.write(writer, target, row, col);
-
-        return writer.toString();
-    }
-
     @Test
     public void TestCsvAdapterReadRecomputeAndWrite() throws IOException {
         String src = "\"1.0\",\"a\"\n\"2.0\",\"b\"\n";
@@ -57,6 +58,12 @@ public class TestCsvAdapter {
     public void TestCsvAdapterNotFull() throws IOException {
         String src = "\"1\",\"\",\"3\"\n\"4\",\"5\",\"\"\n\"\",\"8\",\"9\"\n";
         Assert.assertEquals(src, readAndWrite(src, 3, 3, false));
+    }
 
+    @Test
+    public void testCsvAdapterLoopReference() throws Exception {
+        String src = "\"a1\"\n";
+        String expect = String.format("\"%s\"\n", vLoop.INSTANCE.toString());
+        Assert.assertEquals(expect, readAndWrite(src, 1, 1, true));
     }
 }
