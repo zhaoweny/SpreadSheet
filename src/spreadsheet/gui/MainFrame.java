@@ -7,6 +7,7 @@ import spreadsheet.gui.menu.MenuFactory;
 import spreadsheet.gui.menu.MenuItemFactory;
 import spreadsheet.gui.table.CellEditor;
 import spreadsheet.gui.table.CellRenderer;
+import spreadsheet.gui.table.RowNumberTable;
 import spreadsheet.gui.table.TableModel;
 import spreadsheet.implement.SpreadsheetImpl;
 import spreadsheet.io.CsvAdapter;
@@ -15,7 +16,6 @@ import spreadsheet.parser.Parser;
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -29,7 +29,6 @@ import java.io.IOException;
  */
 public class MainFrame extends JFrame {
     private static final Dimension FRAME_SIZE = new Dimension(800, 600);
-    private static final int COLUMN_WIDTH = 35;
     private static final int MAX_ROW = 10000;
     private static final int MAX_COLUMN = 1000;
 
@@ -80,10 +79,13 @@ public class MainFrame extends JFrame {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.getTableHeader().setReorderingAllowed(false);
 
-        TableColumn firstColumn = table.getColumnModel().getColumn(0);
-        firstColumn.setMaxWidth(COLUMN_WIDTH);
-        firstColumn.setPreferredWidth(COLUMN_WIDTH);
-        return new JScrollPane(table);
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        JTable rowTable = new RowNumberTable(table);
+        scrollPane.setRowHeaderView(rowTable);
+        scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER,
+                rowTable.getTableHeader());
+        return scrollPane;
     }
 
     private JToolBar getExpressionToolBar() {

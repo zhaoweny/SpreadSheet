@@ -55,14 +55,14 @@ public class CellRenderer extends DefaultTableCellRenderer {
         setBorder(noFocusBorder);
         setBackground(tableBackground);
 
-        // row header, set value and header background
-        if (column == 0) {
-            value = String.valueOf(row + 1);
-            setBackground(headerBackground);
-            setHorizontalAlignment(JTextField.CENTER);
-            setValue(value);
-            return this;
-        }
+//        // row header, set value and header background
+//        if (column == 0) {
+//            value = String.valueOf(row + 1);
+//            setBackground(headerBackground);
+//            setHorizontalAlignment(JTextField.CENTER);
+//            setValue(value);
+//            return this;
+//        }
 
         // data table, set right Horizon Alignment
         Location location = new Location(row, column);

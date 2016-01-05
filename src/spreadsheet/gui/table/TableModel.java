@@ -3,7 +3,6 @@ package spreadsheet.gui.table;
 import spreadsheet.api.SpreadSheet;
 import spreadsheet.api.cell.Location;
 
-import javax.crypto.IllegalBlockSizeException;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -51,7 +50,7 @@ public class TableModel implements javax.swing.table.TableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex != 0;
+        return true;
     }
 
     @Override
